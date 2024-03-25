@@ -55,20 +55,15 @@ def ensembl_parse_response(resp: dict):
     return output
 
 def uniprot_or_ensembl_parse(ids: list):
-  if np.all([bool(re.match('ENS[A-Z]+[0-9]{11}', gene)) for gene in ids]):
-    print("Uni")
-    resp = get_uniprot(ids)
-    output = uniprot_parse_response(resp)
-  elif np.all([bool(re.match('[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}', gene)) for gene in ids]):
+  if np.all([bool(re.match('ENS[A-Z]{1,6}[0-9]{11}|MGP_[A-Za-z0-9]{2,10}_(E|G|P|R|T|GT|FM)[0-9]+', gene)) for gene in ids]):
     print("Ens")
     resp = get_ensembl(ids)
     output = ensembl_parse_response(resp)
+  elif np.all([bool(re.match('[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}', gene)) for gene in ids]):
+    print("Uni")
+    resp = get_uniprot(ids)
+    output = uniprot_parse_response(resp)
   else:
     raise TypeError('No matches')
   return output
 
-#my_ids = ['ENSG00000157764', 'ENSG00000248378','ENSDARG00000024771']
-#my_ids = ['MGP_129S1SvImJ_G0019185', 'MGP_NODShiLtJ_G0019038','MGP_LPJ_G0019086']
-#my_ids = ['O60494', 'Q9JLB4']
-my_ids = ['O60494', 'AAAA4']
-uniprot_or_ensembl_parse(my_ids)
